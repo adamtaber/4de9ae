@@ -9,11 +9,16 @@ import FormNode from "./FormNode";
 import { useQuery } from "@tanstack/react-query";
 import getActionBlueprintGraph from "../queries/getActionBlueprintGraph";
 import { addIdsToEdges, getPreviousNodes } from "../utils/helperFunctions";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useAtom, useSetAtom } from "jotai";
+import { nodesAtom, previousNodesAtom } from "../state/flowChartState";
 
 const nodeTypes = { form: FormNode };
 
 const FlowChart = () => {
+  const [nodes, setNodes] = useAtom(nodesAtom);
+  const setPreviousNodes = useSetAtom(previousNodesAtom);
+
   const { isPending, error, data } = useQuery({
     queryKey: ["actionBlueprintGraphData"],
     queryFn: () =>
@@ -24,14 +29,16 @@ const FlowChart = () => {
       }),
   });
 
-  const nodes = useMemo(() => data?.nodes ?? [], [data?.nodes]);
-  const edges = useMemo(() => addIdsToEdges(data?.edges ?? []), [data?.edges]);
-  const previousNodes = useMemo(
-    () => getPreviousNodes(data?.edges ?? []),
-    [data?.edges],
-  );
+  useEffect(() => {
+    setNodes(data?.nodes ?? []);
+    const previousNodes = getPreviousNodes(data?.edges ?? []);
+    setPreviousNodes(previousNodes);
+    console.log(data?.forms);
+    console.log(data?.nodes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
-  console.log(previousNodes);
+  const edges = useMemo(() => addIdsToEdges(data?.edges ?? []), [data?.edges]);
 
   if (error || isPending) return null;
 

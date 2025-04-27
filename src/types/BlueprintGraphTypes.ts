@@ -61,3 +61,15 @@ export type EdgeData = {
   source: string;
   target: string;
 };
+
+type NodePosition = {
+  x: number;
+  y: number;
+};
+
+export type BlueprintNode = {
+  data: NodeData;
+  id: string;
+  position: NodePosition;
+  type: "form" | "branch" | "trigger" | "configuration";
+};

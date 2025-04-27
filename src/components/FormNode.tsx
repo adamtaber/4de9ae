@@ -2,13 +2,29 @@ import { Handle, Position } from "@xyflow/react";
 import { TableProperties } from "lucide-react";
 import { NodeData } from "../types/BlueprintGraphTypes";
 import { capitalizeString } from "../utils/helperFunctions";
+import { useSetAtom } from "jotai";
+import { currentNodeAtom, formModalOpenAtom } from "../state/flowChartState";
 
-const FormNode = ({ data }: { data: NodeData }) => {
+const FormNode = ({ data, id }: { data: NodeData; id: string }) => {
+  const setFormModalOpen = useSetAtom(formModalOpenAtom);
+  const setCurrentNode = useSetAtom(currentNodeAtom);
+
   const nodeType = capitalizeString(data?.component_type);
   const nodeName = data?.name;
 
+  const handleClick = () => {
+    setFormModalOpen(true);
+    setCurrentNode(id);
+  };
+
   return (
-    <div className={"h-12 w-32 rounded-sm border border-gray-400 bg-white"}>
+    <div
+      role="button"
+      onClick={() => handleClick()}
+      className={
+        "h-12 w-32 cursor-pointer rounded-sm border border-gray-400 bg-white"
+      }
+    >
       <div className={"flex h-full items-center gap-1 p-1"}>
         <div
           className={
