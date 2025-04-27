@@ -8,7 +8,8 @@ import "@xyflow/react/dist/style.css";
 import FormNode from "./FormNode";
 import { useQuery } from "@tanstack/react-query";
 import getActionBlueprintGraph from "../queries/getActionBlueprintGraph";
-import { addIdsToEdges } from "../utils/helperFunctions";
+import { addIdsToEdges, getPreviousNodes } from "../utils/helperFunctions";
+import { useMemo } from "react";
 
 const nodeTypes = { form: FormNode };
 
@@ -23,18 +24,16 @@ const FlowChart = () => {
       }),
   });
 
-  if (error) {
-    console.log(error);
-    return;
-  }
+  const nodes = useMemo(() => data?.nodes ?? [], [data?.nodes]);
+  const edges = useMemo(() => addIdsToEdges(data?.edges ?? []), [data?.edges]);
+  const previousNodes = useMemo(
+    () => getPreviousNodes(data?.edges ?? []),
+    [data?.edges],
+  );
 
-  if (isPending) {
-    console.log("loading");
-    return;
-  }
+  console.log(previousNodes);
 
-  const nodes = data.nodes;
-  const edges = addIdsToEdges(data.edges);
+  if (error || isPending) return null;
 
   return (
     <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes}>
