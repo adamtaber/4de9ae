@@ -8,16 +8,25 @@ import "@xyflow/react/dist/style.css";
 import FormNode from "./FormNode";
 import { useQuery } from "@tanstack/react-query";
 import getActionBlueprintGraph from "../queries/getActionBlueprintGraph";
-import { addIdsToEdges, getPreviousNodes } from "../utils/helperFunctions";
+import {
+  addIdsToEdges,
+  createFormFieldMap,
+  getPreviousNodes,
+} from "../utils/helperFunctions";
 import { useEffect, useMemo } from "react";
 import { useAtom, useSetAtom } from "jotai";
-import { nodesAtom, previousNodesAtom } from "../state/flowChartState";
+import {
+  formPropertiesAtom,
+  nodesAtom,
+  previousNodesAtom,
+} from "../state/flowChartState";
 
 const nodeTypes = { form: FormNode };
 
 const FlowChart = () => {
   const [nodes, setNodes] = useAtom(nodesAtom);
   const setPreviousNodes = useSetAtom(previousNodesAtom);
+  const setFormProperties = useSetAtom(formPropertiesAtom);
 
   const { isPending, error, data } = useQuery({
     queryKey: ["actionBlueprintGraphData"],
@@ -31,10 +40,15 @@ const FlowChart = () => {
 
   useEffect(() => {
     setNodes(data?.nodes ?? []);
+
     const previousNodes = getPreviousNodes(data?.edges ?? []);
     setPreviousNodes(previousNodes);
-    console.log(data?.forms);
-    console.log(data?.nodes);
+
+    const formProperties = createFormFieldMap(
+      data?.forms ?? [],
+      data?.nodes ?? [],
+    );
+    setFormProperties(formProperties);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 

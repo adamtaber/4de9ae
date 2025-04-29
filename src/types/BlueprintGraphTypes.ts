@@ -73,3 +73,25 @@ export type BlueprintNode = {
   position: NodePosition;
   type: "form" | "branch" | "trigger" | "configuration";
 };
+
+type FieldSchema = {
+  type: string;
+  properties: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: Record<string, any>;
+  };
+  required: string[];
+};
+
+export type BlueprintForm = {
+  id: string;
+  name: string;
+  description: string;
+  is_reusable: boolean;
+  field_schema: FieldSchema;
+};
+
+export type FieldProperty = {
+  form: string;
+  property: string;
+};
