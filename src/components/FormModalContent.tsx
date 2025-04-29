@@ -81,6 +81,7 @@ const FormModalContent = ({ currentNodeId, nodes }: FormModalContent) => {
                 <span>{fieldName}</span>
                 {currentFormProperties[field] && (
                   <X
+                    role="button"
                     onClick={() => clearFormProperty(field)}
                     className={"cursor-pointer"}
                   />
